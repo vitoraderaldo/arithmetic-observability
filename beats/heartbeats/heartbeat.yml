@@ -1,0 +1,30 @@
+heartbeat.monitors:
+- type: http
+  schedule: '@every 5s'
+  urls:
+    - http://elasticsearch:9200
+    - http://kibana:5601
+    - http://arithmetic-calulator:7001
+    - http://kong:8000
+    - http://apm:8200
+
+## mysql
+- type: tcp
+  schedule: '@every 5s'
+  hosts:
+    - "db:3306"
+    - "zookeeper:2181"
+    - "kafka:9092"
+
+- type: icmp
+  schedule: '@every 5s'
+  hosts:
+    - metricbeat
+
+processors:
+- add_cloud_metadata: ~
+
+output.elasticsearch:
+  hosts: 'elasticsearch:9200'
+  username: 'elastic'
+  password: 'changeme'

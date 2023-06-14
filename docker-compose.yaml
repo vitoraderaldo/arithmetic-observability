@@ -1,0 +1,103 @@
+version: "3"
+
+services:  
+
+  ## Search engine used to store metrics, logs and traces
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./.docker/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    healthcheck:
+      test: nc -z localhost 9200 || exit 1
+      interval: 5s
+      timeout: 2s
+      retries: 60
+      start_period: 10s
+    networks:
+      - arithmetic
+   
+  ## UI that consumes data from Elastic Search
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.0
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    networks:
+      - arithmetic
+    healthcheck:
+      test: curl localhost:5601 || exit 1
+      interval: 5s
+      timeout: 2s
+      retries: 60
+      start_period: 5s
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+    
+  ## Beat that sends metrics to Elastic Search and creates dashboards in Kibana
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:7.13.0
+    user: root
+    volumes:      
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./beats/metrics/dev-metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    restart: on-failure
+    networks:
+      - arithmetic
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+
+  ## Beat that sends information about the host uptime to Elastic Search and creates dashboards in Kibana
+  heartbeat:
+    image: docker.elastic.co/beats/heartbeat:7.13.0
+    volumes:      
+    - ./beats/heartbeats/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+    environment: 
+    - setup.kibana.host=kibana:5601
+    networks:
+      - arithmetic
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+
+  ## Server that receives requests from microservices and sends them to Elastic Search
+  apm:
+    image: docker.elastic.co/apm/apm-server-oss:7.13.0
+    volumes:      
+    - ./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
+    ports:
+      - "8200:8200"
+    restart: on-failure
+    networks:
+      - arithmetic
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+
+networks:
+  arithmetic:
+    external: true
