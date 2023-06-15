@@ -1,0 +1,21 @@
+filebeat:
+  inputs:
+    - type: log
+      paths:
+        # - /shared-volume/kong/log/kong.log
+        - /shared-volume/calculator/log/arithmetic-calculator.log
+
+processors:
+  - decode_json_fields:        
+      fields: ["message"]
+      process_array: false
+      max_depth: 2
+      target: ""
+      overwrite_keys: true
+      add_error_key: true
+
+output:
+  elasticsearch:
+    hosts: ["elasticsearch:9200"]
+    username: 'elastic'
+    password: 'changeme'
