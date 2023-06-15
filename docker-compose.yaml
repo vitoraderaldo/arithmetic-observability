@@ -82,6 +82,21 @@ services:
       kibana:
         condition: service_healthy
 
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.13.1
+    volumes:
+      - ./beats/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ../shared-volume:/shared-volume
+    networks:
+      - arithmetic
+    environment: 
+      - setup.kibana.host=kibana:5601
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+
   ## Server that receives requests from microservices and sends them to Elastic Search
   apm:
     image: docker.elastic.co/apm/apm-server-oss:7.13.0

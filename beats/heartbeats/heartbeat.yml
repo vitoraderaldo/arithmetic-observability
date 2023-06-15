@@ -5,7 +5,7 @@ heartbeat.monitors:
     - http://elasticsearch:9200
     - http://kibana:5601
     - http://arithmetic-calulator:7001
-    - http://kong:8000
+    # - http://kong:8000
     - http://apm:8200
 
 ## mysql
