@@ -21,7 +21,7 @@ data:
           - galera_status
           - performance
         period: 10s
-        hosts: ['${ARITHMETIC_DATABASE_URL}']
+        hosts: ['${CALCULATOR_DATABASE_USER}:${CALCULATOR_DATABASE_PASSWORD}@tcp(${CALCULATOR_DATABASE_URL})/']
 
     setup.dashboards.enabled: true
     cloud.id: '${ELASTIC_CLOUD_ID}'
