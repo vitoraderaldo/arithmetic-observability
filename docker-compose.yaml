@@ -57,7 +57,7 @@ services:
     user: root
     volumes:      
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./beats/metrics/dev-metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+      - ./elastic/beats/metrics/dev-metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
     restart: on-failure
     networks:
       - arithmetic
@@ -71,7 +71,7 @@ services:
   heartbeat:
     image: docker.elastic.co/beats/heartbeat:7.13.0
     volumes:      
-    - ./beats/heartbeats/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+    - ./elastic/beats/heartbeats/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
     environment: 
     - setup.kibana.host=kibana:5601
     networks:
@@ -82,10 +82,11 @@ services:
       kibana:
         condition: service_healthy
 
+  ## Beat that sends information about logs to Elastic Search
   filebeat:
     image: docker.elastic.co/beats/filebeat:7.13.1
     volumes:
-      - ./beats/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./elastic/beats/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - ../shared-volume:/shared-volume
     networks:
       - arithmetic
@@ -101,7 +102,7 @@ services:
   apm:
     image: docker.elastic.co/apm/apm-server-oss:7.13.0
     volumes:      
-    - ./apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
+    - ./elastic/apm/apm-server.yml:/usr/share/apm-server/apm-server.yml
     ports:
       - "8200:8200"
     restart: on-failure
@@ -113,6 +114,33 @@ services:
       kibana:
         condition: service_healthy
 
+  prometheus:
+    image: prom/prometheus:v2.45.0-rc.0
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    networks:
+      - arithmetic
+    healthcheck:
+      test: nc -z localhost 9090 || exit 1
+      interval: 5s
+      timeout: 2s
+      retries: 60
+      start_period: 5s
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    ports:
+      - "3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks:
+      - arithmetic
+    
 networks:
   arithmetic:
     external: true
