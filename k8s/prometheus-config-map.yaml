@@ -23,6 +23,12 @@ data:
         static_configs:
           - targets: ['arithmetic-backend-cluster-ip-service:80']
 
+      - job_name: 'kong'
+        metrics_path: '/prometheus/metrics'
+        scrape_interval: 30s
+        static_configs:
+          - targets: ['arithmetic-kong-service:80']
+
     remote_write:
       - url: PROMETHEUS_REMOTE_WRITE_URL
         basic_auth:
