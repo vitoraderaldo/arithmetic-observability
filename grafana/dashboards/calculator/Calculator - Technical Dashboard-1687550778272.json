@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
+      "name": "DS_GRAFANACLOUD-ARITHMETIC-PROM",
+      "label": "grafanacloud-arithmetic-prom",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.0.0"
+      "version": "10.0.1-cloud.3.f250259e"
     },
     {
       "type": "datasource",
@@ -56,7 +56,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "${DS_GRAFANACLOUD-ARITHMETIC-PROM}"
       },
       "fieldConfig": {
         "defaults": {
@@ -107,36 +107,7 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "/calculator/addition (POST)",
-                  "/calculator/division (POST)",
-                  "/calculator/square-root (POST)",
-                  "/calculator/multiplication (POST)",
-                  "/calculator/subtraction (POST)"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -162,11 +133,11 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_GRAFANACLOUD-ARITHMETIC-PROM}"
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "histogram_quantile(0.75, sum by(le, route, method) (rate(app_calculator_request_time_duration_bucket[$__interval])))",
+          "expr": "histogram_quantile(0.75, sum by(le, route, method) (rate(app_calculator_request_time_duration_bucket[$__rate_interval])))",
           "instant": false,
           "legendFormat": "{{route}} ({{method}})",
           "range": true,
@@ -177,7 +148,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "10s",
+  "refresh": "30s",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -185,7 +156,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
