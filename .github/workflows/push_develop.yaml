@@ -1,0 +1,26 @@
+name: send-to-k8s-repository
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  test_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Repository
+        uses: actions/checkout@v3
+
+    
+      - name: Push filebeat.yml to k8s repository
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: elastic/beats/filebeat/filebeat.yml
+          destination_repo: vitoraderaldo/arithmetic-k8s
+          destination_folder: 'observability/filebeat'
+          user_email: action@github.com
+          user_name: 'GitHub Action'
+          commit_message: 'feat: update filebeat.yml'
