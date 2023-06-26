@@ -25,3 +25,42 @@ jobs:
           user_name: 'GitHub Action'
           commit_message: 'feat: update filebeat.yml'
           destination_branch: develop
+
+      - name: Push metricbeat.yml to k8s repository
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: elastic/beats/metrics/staging/metricbeat.yml
+          destination_repo: vitoraderaldo/arithmetic-k8s
+          destination_folder: 'observability/metricbeat'
+          user_email: action@github.com
+          user_name: 'GitHub Action'
+          commit_message: 'feat: update metricbeat.yml'
+          destination_branch: develop
+
+      - name: Push heartbeat.yml to k8s repository
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: elastic/beats/heartbeats/staging/heartbeat.yml
+          destination_repo: vitoraderaldo/arithmetic-k8s
+          destination_folder: 'observability/heartbeat'
+          user_email: action@github.com
+          user_name: 'GitHub Action'
+          commit_message: 'feat: update heartbeat.yml'
+          destination_branch: develop
+
+      - name: Push prometheus.yml to k8s repository
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: prometheus/staging/prometheus.yml
+          destination_repo: vitoraderaldo/arithmetic-k8s
+          destination_folder: 'observability/prometheus'
+          user_email: action@github.com
+          user_name: 'GitHub Action'
+          commit_message: 'feat: update prometheus.yml'
+          destination_branch: develop
