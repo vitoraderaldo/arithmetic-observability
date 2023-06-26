@@ -24,3 +24,4 @@ jobs:
           user_email: action@github.com
           user_name: 'GitHub Action'
           commit_message: 'feat: update filebeat.yml'
+          destination_branch: develop
