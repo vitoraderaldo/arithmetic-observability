@@ -86,7 +86,7 @@ services:
   filebeat:
     image: docker.elastic.co/beats/filebeat:7.13.1
     volumes:
-      - ./elastic/beats/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./elastic/beats/filebeat/dev/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - ../shared-volume:/shared-volume
     networks:
       - arithmetic

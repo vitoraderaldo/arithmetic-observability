@@ -18,7 +18,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: elastic/beats/filebeat/filebeat.yml
+          source_file: elastic/beats/filebeat/staging/filebeat.yml
           destination_repo: vitoraderaldo/arithmetic-k8s
           destination_folder: 'observability/filebeat'
           user_email: action@github.com
